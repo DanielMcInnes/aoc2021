@@ -44,7 +44,7 @@ class Paths : public vector<Path>
 
 };
 
-typedef QMap<int, map<int, int> > MapData;
+typedef QMap<int, QMap<int, int> > MapData;
 
 Q_DECLARE_METATYPE(MapData)
 
@@ -60,26 +60,19 @@ public:
 	void setData(const QStringList& data)
 	{
 		_data = data;
-		/*
-		for (int x = 0; x < width; ++x){
-			for (int y = 0; y < height; ++y)
-			{
-				_data[x][y] = data.at(x).at(y).toLatin1();
-			}
-
-		}
-		*/
 		emit dataChanged();
 	}
 	QStringList data() const
 	{
 		return _data;
 	}
+
 	int width = 0;
 	int height = 0;
 	Position startPos;
 	Position endPos;
 	QStringList _data;
+	MapData _mapData;
 
 	Position getNextPoint(const Map& map, const Position currentPoint, const Direction direction)
 	{
@@ -106,6 +99,7 @@ public:
 
 signals:
 	void dataChanged();
+	void mapDataChanged();
 
 public slots:
 };
