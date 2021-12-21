@@ -59,25 +59,14 @@ Window {
 		id: view
 
 		anchors.fill: parent
-		delegate: Rectangle {
-			color: "red"
-			//opacity: modelData / 10
-			border.color: "white"
-			border.width: 1
-			width: 20//columns.height
-			height: width
-			Component.onCompleted: console.log(Object.keys(modelData))
-		}
-
-		/*
-			ListView {
+		delegate: ListView {
 			width: parent.width
 			height: 20
 			model: modelData
 			orientation: ListView.Horizontal
 			delegate: Rectangle {
 				color: "red"
-				//opacity: modelData / 10
+				opacity: modelData / 10
 				border.color: "white"
 				border.width: 1
 				width: 20//columns.height
@@ -86,7 +75,9 @@ Window {
 					anchors.fill: parent
 					text: modelData
 				}
-			}*/
+			}
+		}
+
 	}
 	Component.onCompleted: {
 		var mapData = []
