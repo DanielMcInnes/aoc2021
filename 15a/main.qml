@@ -39,7 +39,7 @@ Window {
 			orientation: ListView.Horizontal
 			delegate: Rectangle {
 				property int yy : index
-				color: "red"
+				color: path.includes([xx, yy]) ? "green" : "red"
 				opacity: modelData / 10
 				border.color: "white"
 				border.width: 1
