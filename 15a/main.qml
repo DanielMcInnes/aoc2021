@@ -18,7 +18,7 @@ Window {
 	readonly property var directions: [down, right, left, up]
 
 
-/*
+	/*
 	ListView {
 		id: view2
 
@@ -45,29 +45,48 @@ Window {
 		}
 	}
 */
+
+	/*
+	Rectangle {
+	color: "red"
+	//opacity: modelData / 10
+	border.color: "white"
+	border.width: 1
+	width: 20
+	height: width
+}*/
 	ListView {
 		id: view
 
 		anchors.fill: parent
-		delegate: ListView {
-			id: columns
+		delegate: Rectangle {
+			color: "red"
+			//opacity: modelData / 10
+			border.color: "white"
+			border.width: 1
+			width: 20//columns.height
+			height: width
+			Component.onCompleted: console.log(Object.keys(modelData))
+		}
+
+		/*
+			ListView {
 			width: parent.width
 			height: 20
-			orientation: ListView.Horizontal
 			model: modelData
+			orientation: ListView.Horizontal
 			delegate: Rectangle {
 				color: "red"
-				opacity: modelData / 10
+				//opacity: modelData / 10
 				border.color: "white"
 				border.width: 1
-				width: columns.height
+				width: 20//columns.height
 				height: width
 				Text {
 					anchors.fill: parent
 					text: modelData
 				}
-			}
-		}
+			}*/
 	}
 	Component.onCompleted: {
 		var mapData = []
@@ -81,14 +100,18 @@ Window {
 				data.push(line[risk])
 				x++
 			}
-			mapData.push(data)
-			console.log("data:", data, mapData.length)
+			mapData.push(JSON.parse(JSON.stringify(data)))
+			console.log("data:", data, data.length, mapData.length, "mapData[0]:", mapData[0])
 			data.length = 0
 			y++
 			x = 0
 		}
-		map = mapData
-		console.log(map.length)
+
+		for (var i = 0; i < mapData.length; ++i) {
+			console.log("mapData[", i, "] =", mapData[i])
+		}
+
+		console.log(mapData.length)
 		view.model = map
 	}
 }
