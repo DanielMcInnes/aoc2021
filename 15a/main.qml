@@ -6,78 +6,51 @@ Window {
 	visible: true
 	visibility: "FullScreen"
 	readonly property int up: 0
-	readonly property int down: 0
-	readonly property int left: 0
-	readonly property int right: 0
-
-
+	readonly property int down: 1
+	readonly property int left: 2
+	readonly property int right: 3
+	readonly property int mapWidth: map && map[0] ? map[0].length : 0
+	readonly property int mapHeight: map ? map.length : 0
+	readonly property var startPos: [0,0]
+	readonly property var endPos: [mapWidth - 1, mapHeight - 1]
 	property int counter: 0
 	property var stringlist: Map.data
 	property var map
-
 	readonly property var directions: [down, right, left, up]
+	property var path: []
 
-
-	/*
-	ListView {
-		id: view2
-
-		anchors.fill: parent
-		model: stringlist
-		delegate: ListView {
-			id: columns
-			width: parent.width
-			height: 20
-			orientation: ListView.Horizontal
-			model: modelData.split('')
-			delegate: Rectangle {
-				color: "red"
-				opacity: modelData / 10
-				border.color: "white"
-				border.width: 1
-				width: columns.height
-				height: width
-				Text {
-					anchors.fill: parent
-					text: modelData
-				}
-			}
+	function branchPath(path) {
+		console.log("starting from: ", path[path.length - 1])
+		for (var i = 0; i < directions.length; ++i) {
+			console.log("direction:", directions[i])
 		}
 	}
-*/
 
-	/*
-	Rectangle {
-	color: "red"
-	//opacity: modelData / 10
-	border.color: "white"
-	border.width: 1
-	width: 20
-	height: width
-}*/
 	ListView {
-		id: view
+		id: xview
 
 		anchors.fill: parent
+		model: map
 		delegate: ListView {
+			property int xx : index
 			width: parent.width
 			height: 20
 			model: modelData
 			orientation: ListView.Horizontal
 			delegate: Rectangle {
+				property int yy : index
 				color: "red"
 				opacity: modelData / 10
 				border.color: "white"
 				border.width: 1
-				width: 20//columns.height
+				width: 40//columns.height
 				height: width
 				Text {
 					anchors.fill: parent
-					text: modelData
+					text: modelData + "(" + xx + ","  + yy + ")"
 				}
 			}
 		}
-
 	}
 	Component.onCompleted: {
 		var mapData = []
@@ -98,11 +71,14 @@ Window {
 			x = 0
 		}
 
+
 		for (var i = 0; i < mapData.length; ++i) {
 			console.log("mapData[", i, "] =", mapData[i])
 		}
 
-		console.log(mapData.length)
-		view.model = mapData
+		map = mapData
+		console.log(mapData.length, "mapWidth:", mapWidth)
+		path.push(startPos)
+		branchPath(path)
 	}
 }
