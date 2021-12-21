@@ -112,6 +112,6 @@ Window {
 		}
 
 		console.log(mapData.length)
-		view.model = map
+		view.model = mapData
 	}
 }
