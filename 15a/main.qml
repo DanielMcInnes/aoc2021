@@ -17,13 +17,60 @@ Window {
 	property var stringlist: Map.data
 	property var map
 	readonly property var directions: [down, right, left, up]
-	property var path: []
+	readonly property var directionsStrings: ["down", "right", "left", "up"]
+	property var path: [[0,0]]
 
-	function branchPath(path) {
-		console.log("starting from: ", path[path.length - 1])
-		for (var i = 0; i < directions.length; ++i) {
-			console.log("direction:", directions[i])
+	function clone(thing) {
+		return JSON.parse(JSON.stringify(thing))
+	}
+
+	function movePoint(point, direction) {
+		var newPos = JSON.parse(JSON.stringify(point))
+		switch (direction) {
+		case up:
+			newPos[1]--
+			break;
+		case down:
+			newPos[1]++
+			break;
+		case left:
+			newPos[0]--
+			break;
+		case right:
+			newPos[0]++
+			break;
 		}
+		return newPos
+	}
+	function mapContainsPoint(point) {
+		if ((point[0] < 0) || point[1] < 0) return false;
+		if ((point[0] >= mapWidth) || point[1] >= mapHeight) return false;
+		return true
+	}
+	function canAddPointToPath(path, point) {
+		if (pathContainsLocation(path, point)) return false
+		return mapContainsPoint(point)
+	}
+	function branchPath(path) {
+		var lastPos = path[path.length - 1]
+		console.log("starting from: ", lastPos)
+		for (var i = 0; i < directions.length; ++i) {
+			var direction = directions[i]
+			var newPos = movePoint(lastPos, direction)
+			console.log("direction:", directionsStrings[direction], "newPos:", newPos, "lastPos:", lastPos)
+			if (canAddPointToPath(path, newPos)) {
+
+			}
+		}
+	}
+	function pathContainsLocation(path, location) {
+		for (var i = 0; i < path.length; ++i) {
+			var loc = path[i]
+			if (loc[0] === location[0] && loc[1] === location[1])  {
+				return true
+			}
+		}
+		return false
 	}
 
 	ListView {
@@ -34,21 +81,27 @@ Window {
 		delegate: ListView {
 			property int xx : index
 			width: parent.width
-			height: 20
+			height: 60
 			model: modelData
 			orientation: ListView.Horizontal
 			delegate: Rectangle {
 				property int yy : index
-				color: path.includes([xx, yy]) ? "green" : "red"
-				opacity: modelData / 10
-				border.color: "white"
-				border.width: 1
-				width: 40//columns.height
-				height: width
-				Text {
-					anchors.fill: parent
-					text: modelData + "(" + xx + ","  + yy + ")"
+				property var xy : [xx, yy]
+				color: pathContainsLocation(path, xy) ? "green" : "red"
+				opacity: pathContainsLocation(path, xy) ? 1 :  modelData / 10
+				border.color: pathContainsLocation(path, xy) ? "black" : "white"
+				border.width: pathContainsLocation(path, xy) ? 3 : 1
+				width: 60
+				height: 60
+				Column {
+					Text {
+						text: modelData + "(" + xy + ")"
+					}
+					Text {
+						text: path[0].join()
+					}
 				}
+
 			}
 		}
 	}
@@ -77,8 +130,8 @@ Window {
 		}
 
 		map = mapData
-		console.log(mapData.length, "mapWidth:", mapWidth)
-		path.push(startPos)
+		var loc = [0,10]
+		console.log(mapData.length, "mapWidth:", mapWidth, mapContainsPoint(loc))
 		branchPath(path)
 	}
 }
