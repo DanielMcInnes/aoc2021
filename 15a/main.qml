@@ -59,7 +59,7 @@ Window {
 	}
 	function totalRisk(path) {
 		var risk = 0
-		for (var i = 0; i < path.length; ++i) {
+		for (var i = 1; i < path.length; ++i) {
 			var loc = path[i]
 			risk += parseInt(map[loc[1]][loc[0]])
 		}
@@ -148,11 +148,9 @@ Window {
 				width: 60
 				height: 60
 				Column {
+					anchors.centerIn: parent
 					Text {
-						text: modelData + "(" + xy + ")"
-					}
-					Text {
-						text: path[0].join()
+						text: modelData
 					}
 				}
 
