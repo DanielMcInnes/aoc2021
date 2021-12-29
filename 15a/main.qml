@@ -64,7 +64,7 @@ Window {
 		var risk = 0
 		for (var i = 1; i < path.length; ++i) {
 			var loc = path[i]
-			risk += parseInt(map[loc[1]][loc[0]])
+			risk += parseInt(map[loc[1]][loc[0]].risk)
 		}
 		path["risk"] = risk
 		console.log(path.id, "totalRisk:", path.risk, "bestPath.risk:", bestPath.risk, (path.risk < bestPath.risk))
@@ -145,7 +145,7 @@ Window {
 				property int xx : index
 				property var xy : [xx, yy]
 				color: pathContainsLocation(bestPath, xy) ? "green" : "red"
-				opacity: pathContainsLocation(bestPath, xy) ? 1 :  modelData / 10
+				opacity: pathContainsLocation(bestPath, xy) ? 1 :  modelData.risk / 10
 				border.color: pathContainsLocation(path, xy) ? "black" : "white"
 				border.width: pathContainsLocation(path, xy) ? 3 : 1
 				width: 60
@@ -153,7 +153,7 @@ Window {
 				Column {
 					anchors.centerIn: parent
 					Text {
-						text: modelData
+						text: modelData.risk
 					}
 				}
 
@@ -177,8 +177,11 @@ Window {
 		for (var key in stringlist) {
 			var line = stringlist[key]
 			for (var key2 in line) {
-				var risk = line[key2]
-				data.push(risk)
+				var node = {
+					risk: line[key2],
+					visited: false
+				}
+				data.push(node)
 			}
 			mapData.push(cloneArray(data))
 			console.log("data:", data, data.length, mapData.length, "mapData[0]:", mapData[0])
@@ -191,6 +194,6 @@ Window {
 		path["id"] = 0
 		path["risk"] = 1000000
 		bestPath = clonePath(path)
-		console.log("bestPath initial risk:", bestPath.risk)
+		map[0][0].visited = true
 	}
 }
