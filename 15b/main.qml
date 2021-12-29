@@ -224,8 +224,9 @@ Window {
 		for (var key in stringlist) {
 			var line = stringlist[key]
 			for (var key2 in line) {
+				var risk = line[key2]
 				var node = {
-					risk: line[key2],
+					risk: risk,
 					visited: false,
 					cumulativeRisk: -1,
 					from: [-1,-1]
