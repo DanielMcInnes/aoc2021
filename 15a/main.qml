@@ -5,6 +5,9 @@ import Foo 1.0
 Window {
 	id: root
 
+	width: 640
+	height: 480
+
 	visible: true
 	readonly property int up: 0
 	readonly property int down: 1
@@ -170,20 +173,16 @@ Window {
 	Component.onCompleted: {
 		var mapData = []
 		var data = []
-		var y = 0
-		var x = 0
 
 		for (var key in stringlist) {
 			var line = stringlist[key]
-			for (var risk in stringlist[key]) {
-				data.push(line[risk])
-				y++
+			for (var key2 in line) {
+				var risk = line[key2]
+				data.push(risk)
 			}
 			mapData.push(cloneArray(data))
 			console.log("data:", data, data.length, mapData.length, "mapData[0]:", mapData[0])
 			data.length = 0
-			x++
-			y = 0
 		}
 		for (var i = 0; i < mapData.length; ++i) {
 			console.log("mapData[", i, "] =", mapData[i])
