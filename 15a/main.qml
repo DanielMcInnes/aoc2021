@@ -230,6 +230,7 @@ Window {
 			data.length = 0
 		}
 		mapData[0][0].cumulativeRisk = 0
+		mapData[0][0].risk = 0
 		map = mapData
 		path["id"] = 0
 		path["risk"] = 1000000
