@@ -20,7 +20,7 @@ Window {
 	property int pathCounter: 0
 	property var stringlist: Map.data
 	property var map
-	readonly property var directions:			[down,	right,	left/*,	up*/]
+	readonly property var directions:			[down,	right,	left,	up]
 	readonly property var directionsStrings:	["up","down","left","right"]
 	property var path: [[0,0]]
 	property var bestPath
@@ -93,19 +93,31 @@ Window {
 		return mapContainsPoint(point)
 	}
 	function visitNode(node) {
+		if (node.visited) {
+			console.log("Already visited this node!")
+			return
+		}
+		var oldPos = map[node[0]][node[1]]
+
 		for (var i = 0; i < directions.length; ++i) {
 			var direction = directions[i]
 			var newPos = movePoint(node, direction)
 			if (mapContainsPoint(newPos)) {
-				console.log(path.id, "visitNode: direction:", directionsStrings[direction], "newPos:", newPos, "newPos.risk:", newPos.risk)
-				for (var key in newPos) {
-					var mapLoc = map[newPos[0]][newPos[1]]
+				console.log(path.id, "visitNode: direction:", directionsStrings[direction], "newPos:", newPos, "map[node[0]][node[1]].risk:", map[node[0]][node[1]].risk)
+				var mapLoc = map[newPos[0]][newPos[1]]
+				var tentativeRisk = parseInt(mapLoc.risk) + parseInt(map[node[0]][node[1]].cumulativeRisk)
+				if (/*(mapLoc.visited === false) &&*/
+						((mapLoc.cumulativeRisk === -1) || tentativeRisk < mapLoc.cumulativeRisk)
+						) {
+					mapLoc.cumulativeRisk = tentativeRisk
 					for (var key2 in mapLoc) {
 						console.log("mapLoc[", key2, "]:", mapLoc[key2])
 					}
+					mapLoc.from = node
 				}
 			}
 		}
+		oldPos.visited = true
 	}
 	function branchPath(path) {
 		var lastPos = path[path.length - 1]
@@ -157,11 +169,11 @@ Window {
 		anchors.fill: parent
 		topMargin: 50
 		leftMargin: 20
-		model: map
+		//model: map
 		delegate: ListView {
 			property int yy : index
 			width: parent.width
-			height: 60
+			height: 10
 			model: modelData
 			orientation: ListView.Horizontal
 			delegate: Rectangle {
@@ -171,12 +183,14 @@ Window {
 				opacity: pathContainsLocation(bestPath, xy) ? 1 :  modelData.risk / 10
 				border.color: pathContainsLocation(path, xy) ? "black" : "white"
 				border.width: pathContainsLocation(path, xy) ? 3 : 1
-				width: 60
-				height: 60
+				width: 20
+				height: 10
 				Column {
 					anchors.centerIn: parent
 					Text {
-						text: modelData.risk
+						//text: modelData.risk
+						text: modelData.cumulativeRisk
+						font.pixelSize: 8
 					}
 				}
 
@@ -189,8 +203,12 @@ Window {
 		text: "start"
 		onClicked: {
 			console.log("starting...")
-			branchPath(path)
-			console.log("Completed! bestPath:", bestPath, bestPath.risk)
+			for (var x = 0; x < mapWidth; ++x) {
+				for (var y = 0; y < mapHeight; ++y) {
+					visitNode([x,y])
+				}
+			}
+			console.log("map[", mapWidth - 1, ",", mapHeight - 1, "].cumulativeRisk:", map[mapWidth - 1][mapHeight - 1].cumulativeRisk)
 		}
 	}
 	Component.onCompleted: {
@@ -203,21 +221,37 @@ Window {
 				var node = {
 					risk: line[key2],
 					visited: false,
-					cumulativeRisk: -1
+					cumulativeRisk: -1,
+					from: [-1,-1]
 				}
 				data.push(node)
 			}
 			mapData.push(cloneArray(data))
-			console.log("data:", data, data.length, mapData.length, "mapData[0]:", mapData[0])
 			data.length = 0
 		}
-		for (var i = 0; i < mapData.length; ++i) {
-			console.log("mapData[", i, "] =", mapData[i])
-		}
+		mapData[0][0].cumulativeRisk = 0
 		map = mapData
 		path["id"] = 0
 		path["risk"] = 1000000
 		bestPath = clonePath(path)
-		visitNode([0,0])
+
+
+
+		console.log("starting...")
+		for (var x = 0; x < mapWidth; ++x) {
+			for (var y = 0; y < mapHeight; ++y) {
+				visitNode([x,y])
+			}
+		}
+		console.log("map[", mapWidth - 1, ",", mapHeight - 1, "].cumulativeRisk:", map[mapWidth - 1][mapHeight - 1].cumulativeRisk)
+		xview.model = map
+
+		var from = map[mapWidth - 1][mapHeight - 1].from
+		bestPath.push([mapWidth-1, mapHeight - 1])
+		while (sameLocation(from, [0,0]) === false) {
+			//console.log("from:", from)
+			bestPath.push(from)
+			from = map[from[0]][from[1]].from
+		}
 	}
 }
