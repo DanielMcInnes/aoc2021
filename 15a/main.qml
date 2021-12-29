@@ -56,8 +56,16 @@ Window {
 		return newPos
 	}
 	function mapContainsPoint(point) {
-		if ((point[0] < 0) || point[1] < 0) return false;
-		if ((point[0] >= mapWidth) || point[1] >= mapHeight) return false;
+		console.log("mapContainsPoint: ", point)
+		if ((point[0] < 0) || point[1] < 0) {
+			//console.log("mapContainsPoint: false")
+			return false;
+		}
+		if ((point[0] >= mapWidth) || point[1] >= mapHeight) {
+			//console.log("mapContainsPoint: false")
+			return false;
+		}
+		//console.log("mapContainsPoint: true")
 		return true
 	}
 	function totalRisk(path) {
@@ -83,6 +91,21 @@ Window {
 			return false
 		}
 		return mapContainsPoint(point)
+	}
+	function visitNode(node) {
+		for (var i = 0; i < directions.length; ++i) {
+			var direction = directions[i]
+			var newPos = movePoint(node, direction)
+			if (mapContainsPoint(newPos)) {
+				console.log(path.id, "visitNode: direction:", directionsStrings[direction], "newPos:", newPos, "newPos.risk:", newPos.risk)
+				for (var key in newPos) {
+					var mapLoc = map[newPos[0]][newPos[1]]
+					for (var key2 in mapLoc) {
+						console.log("mapLoc[", key2, "]:", mapLoc[key2])
+					}
+				}
+			}
+		}
 	}
 	function branchPath(path) {
 		var lastPos = path[path.length - 1]
@@ -179,7 +202,8 @@ Window {
 			for (var key2 in line) {
 				var node = {
 					risk: line[key2],
-					visited: false
+					visited: false,
+					cumulativeRisk: -1
 				}
 				data.push(node)
 			}
@@ -194,6 +218,6 @@ Window {
 		path["id"] = 0
 		path["risk"] = 1000000
 		bestPath = clonePath(path)
-		map[0][0].visited = true
+		visitNode([0,0])
 	}
 }
