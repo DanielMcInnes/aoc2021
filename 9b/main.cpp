@@ -21,16 +21,6 @@ using namespace std;
 
 vector< vector<int> > heightmap;
 
-/*
-class Point : public pair<int, int>
-{
-public:
-
-	operator==(const Point& rhs) {
-		return ((this->first == rhs.first) && (this->second == rhs.second));
-	}
-};
-*/
 typedef pair<int, int> Point;
 class Lowpoint;
 vector< Lowpoint > lowpoints;
@@ -42,7 +32,6 @@ class Lowpoint : public Point {
 public:
 	Lowpoint(int x, int y) : Point(x,y){
 		Point p(x, y);
-		//addPointToBasin(p);
 	}
 	bool isPointInBasin(Point p) {
 		if(heightmap[p.second][p.first] == 9) {
@@ -120,7 +109,7 @@ int main(int argc, char *argv[])
 
 	string str;
 
-	ifstream infile("data10");
+	ifstream infile("data");
 	while (infile >> str)
 	{
 		vector<int> heights;
@@ -168,6 +157,14 @@ int main(int argc, char *argv[])
 	for (auto lowpoint : lowpoints) {
 		cout << "sorted: lowpoint: " << lowpoint.first << ", " << lowpoint.second << " basin size: " << lowpoint._basinPoints.size() << endl;
 	}
+	int basinSize = 0;
+
+	basinSize = lowpoints[lowpoints.size() - 1]._basinPoints.size() *
+			lowpoints[lowpoints.size() - 2]._basinPoints.size() *
+			lowpoints[lowpoints.size() - 3]._basinPoints.size();
+
+	cout << "basinSize: " << basinSize << endl;
+
 
 	return a.exec();
 }
