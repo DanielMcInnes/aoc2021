@@ -22,9 +22,7 @@ Window {
 	property var map
 	readonly property var directions:			[down,	right,	left,	up]
 	readonly property var directionsStrings:	["up","down","left","right"]
-	property var path: [[0,0]]
 	property var bestPath
-	property var paths: []
 
 	function cloneArray(thing) {
 		return JSON.parse(JSON.stringify(thing))
@@ -35,6 +33,15 @@ Window {
 		newPath["id"] = path.id
 		newPath["risk"] = path.risk
 		return newPath
+	}
+	function cloneNode(node) {
+		var newNode = {
+			risk: 1,//node.risk,
+			visited: false,//node.visited,
+			cumulativeRisk: 2,//node.cumulativeRisk,
+			from: [0,0]//node.from
+		}
+		return newNode
 	}
 
 	function movePoint(point, direction) {
@@ -56,17 +63,20 @@ Window {
 		return newPos
 	}
 	function mapContainsPoint(point) {
-		//console.log("mapContainsPoint: ", point)
+		console.log("mapContainsPoint: ", point)
 		if ((point[0] < 0) || point[1] < 0) {
-			//console.log("mapContainsPoint: false")
+			console.log("mapContainsPoint: false")
 			return false;
 		}
 		if ((point[0] >= mapWidth) || point[1] >= mapHeight) {
-			//console.log("mapContainsPoint: false")
+			console.log("mapContainsPoint: false")
 			return false;
 		}
-		//console.log("mapContainsPoint: true")
-		return true
+		if (!!map[point[0]] && !!map[point[0]][point[1]]) {
+			console.log("mapContainsPoint: true")
+			return true
+		}
+		return false;
 	}
 	function totalRisk(path) {
 		var risk = 0
@@ -86,16 +96,9 @@ Window {
 			bestPath = clonePath(path)
 		}
 	}
-	function canAddPointToPath(path, point) {
-		if (pathContainsLocation(path, point)) {
-			return false
-		}
-		return mapContainsPoint(point)
-	}
 	function visitNode(node) {
-		if (node.visited) {
+		if (node.visited || !node || !node[0] || !map[node[0]]) {
 			console.log("Already visited this node!")
-			exit()
 			return
 		}
 		var oldPos = map[node[0]][node[1]]
@@ -104,7 +107,10 @@ Window {
 			var direction = directions[i]
 			var newPos = movePoint(node, direction)
 			if (mapContainsPoint(newPos)) {
-				console.log(path.id, "visitNode [", node.toString(), "]: direction:", directionsStrings[direction], "newPos:", newPos, "map[node[0]][node[1]].risk:", map[node[0]][node[1]].risk)
+
+				console.log("visitNode [", node.toString(), "]: direction:", directionsStrings[direction],
+							"newPos:", newPos[0], newPos[1], "map[node[0]][node[1]].risk:", map[node[0]][node[1]].risk)
+				console.log("mapWidth:", mapWidth)
 				var mapLoc = map[newPos[0]][newPos[1]]
 				var tentativeRisk = parseInt(mapLoc.risk) + parseInt(map[node[0]][node[1]].cumulativeRisk)
 				if ((mapLoc.visited === false) &&
@@ -119,29 +125,6 @@ Window {
 			}
 		}
 		oldPos.visited = true
-	}
-	function branchPath(path) {
-		var lastPos = path[path.length - 1]
-		for (var i = 0; i < directions.length; ++i) {
-			var direction = directions[i]
-			var newPos = movePoint(lastPos, direction)
-			console.log(path.id, "direction:", directionsStrings[direction], "newPos:", newPos, "newPos.risk:", "lastPos:", lastPos)
-			if (canAddPointToPath(path, newPos)) {
-				var newPath = cloneArray(path)
-				newPath.id = pathCounter++
-				newPath.push(newPos)
-				console.log("new path:", newPath.id,  newPath)
-				paths.push(newPath)
-				console.log("Paths:", paths.length)
-				if (sameLocation(newPos, endPos)) { // we have reached the end
-					totalRisk(newPath)
-					console.log(newPath.id, "this path has reached the end", bestPath.risk, newPath.risk)
-				} else {
-					branchPath(newPath)
-				}
-			}
-		}
-		delete(path)
 	}
 	function sameLocation(loc1, loc2) {
 		return (loc1[0] === loc2[0] && loc1[1] === loc2[1])
@@ -167,7 +150,7 @@ Window {
 	ListView {
 		id: xview
 
-		readonly property int cellSize: 60
+		readonly property int cellSize: 30
 		anchors.fill: parent
 		topMargin: 50
 		leftMargin: 20
@@ -181,10 +164,10 @@ Window {
 			delegate: Rectangle {
 				property int xx : index
 				property var xy : [xx, yy]
-				color: pathContainsLocation(bestPath, xy) ? "green" : "red"
-				opacity: pathContainsLocation(bestPath, xy) ? 1 :  modelData.risk / 10
-				border.color: pathContainsLocation(path, xy) ? "black" : "white"
-				border.width: pathContainsLocation(path, xy) ? 3 : 1
+				color: "red"//pathContainsLocation(bestPath, xy) ? "green" : "red"
+				opacity: /*pathContainsLocation(bestPath, xy) ? 1 :  */modelData.risk / 10
+				border.color: "black"
+				border.width: 1
 				width: xview.cellSize
 				height: xview.cellSize
 				Column {
@@ -192,12 +175,15 @@ Window {
 					Text {
 						text: modelData.risk
 					}
+					/*
 					Text {
 						text: modelData.cumulativeRisk
 					}
+					*/
+					/*
 					Text {
 						text: modelData.from.toString()
-					}
+					}*/
 				}
 
 			}
@@ -223,28 +209,51 @@ Window {
 
 		for (var key in stringlist) {
 			var line = stringlist[key]
-			for (var key2 in line) {
-				var risk = line[key2]
-				var node = {
-					risk: risk,
-					visited: false,
-					cumulativeRisk: -1,
-					from: [-1,-1]
+			for (var i = 0; i < 5; ++i) {
+				for (var key2 in line) {
+					var risk = parseInt(line[key2]) + i
+					risk = risk > 9 ? risk - 9 : risk
+					var node = {
+						risk: risk,
+						visited: false,
+						cumulativeRisk: -1,
+						from: [-1,-1]
+					}
+					data.push(node)
 				}
-				data.push(node)
 			}
 			mapData.push(cloneArray(data))
 			data.length = 0
 		}
+		var mapDataLength = mapData.length
+		for (var i = 0; i < 4; ++i) {
+			for (var j = 0; j < mapDataLength; ++j) {
+				var line = cloneArray(mapData[j])
+				for (var k = 0; k < line.length; ++k) {
+					var node = line[k]
+					var risk = node.risk + i + 1
+					risk = risk > 9 ? risk - 9 : risk
+					line[k].risk = risk
+				}
+				mapData.push(line)
+			}
+		}
+
 		mapData[0][0].cumulativeRisk = 0
 		mapData[0][0].from = [0,0]
+
+		for (var i = 0; i < mapData.length; ++i) {
+			var line = mapData[i]
+			var string = ""
+			for (var j = 0; j < line.length; ++j) {
+				var node = line[j]
+				string += node.risk
+			}
+
+			console.log("mapData[", i, "]:", string)
+		}
+
 		map = mapData
-		path["id"] = 0
-		path["risk"] = 1000000
-		bestPath = clonePath(path)
-
-
-
 		console.log("starting...")
 		for (var x = 0; x < mapWidth; ++x) {
 			for (var y = 0; y < mapHeight; ++y) {

@@ -46,7 +46,7 @@ int main(int argc, char *argv[])
 
 	string str;
 
-	ifstream infile("data10");
+	ifstream infile("data");
 	while (infile >> str)
 	{
 		QString qs(str.c_str());
