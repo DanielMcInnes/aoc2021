@@ -2,7 +2,6 @@
 #include <iostream>
 #include <fstream>
 #include <cstring>
-#include <cassert>
 
 using namespace std;
 
@@ -17,9 +16,11 @@ Grid::Grid(const char* filename) {
 		{
 			cout << "line: " << line << endl;
 			for (auto& ch : line) {
-				_grid[y][x] = ch;
+				_grid[x][y] = ch;
+				cout << "[" << x << "," << y << "] = " << ch;
 				x++;
 			}
+			cout << endl;
 			x = 0;
 			y++;
 		}
@@ -28,21 +29,22 @@ Grid::Grid(const char* filename) {
 
 string str(const Direction direction) {
 	switch (direction) {
-	case North: return ("north");
+	case North: return "north";
 	case South: return "south";
 	case East: return "east";
 	case West: return "west";
 	}
+	assert (0);
+	return "";
 }
 
 void Grid::process() {
+	cout << "grid size: " << _grid.size() << endl;
 	for (auto& xline : _grid) {
 		for (auto& yline : xline.second) {
 			xy loc(xline.first, yline.first);
-			int x = xline.first;
-			int y = yline.first;
 			char ch = yline.second;
-			cout << "[" << loc.x << "," << loc.y << "]" << ch << " ";
+			//cout << "[" << loc.x << "," << loc.y << "]" << ch << " ";
 			if (isElf(loc)) {
 				cout << "found an elf at " << loc.x << loc.y << " adjacent ? " << (isElfAdjacent(loc.x, loc.y) ? "yes" : "no") <<  endl;
 				proposeMove(loc);
@@ -52,7 +54,6 @@ void Grid::process() {
 	}
 }
 
-
 void Grid::proposeMove(const xy& loc) {
 	if (isElfAdjacent(loc.x, loc.y)) {
 		for (Direction& dir : _directions) {
@@ -60,41 +61,39 @@ void Grid::proposeMove(const xy& loc) {
 				cout << "elf at " << loc.x << " " << loc.y << " can move " << str(dir) << endl;
 			}
 		}
-		Direction dir = _directions.at(0);
 	} else {
 		cout << "no elf adjacent to " << loc.x << " " << loc.y << endl;
 	}
 }
 
 bool Grid::elfCanMove(const xy& loc, const Direction direction) const {
+	//cout << "elfCanMove(" << loc.x << loc.y << ")" << str(direction) << endl;
 	switch (direction) {
 	case North: return (isEmpty(loc.x-1, loc.y-1) && isEmpty(loc.x, loc.y-1) && isEmpty(loc.x+1, loc.y-1));
 	case South: return (isEmpty(loc.x-1, loc.y+1) && isEmpty(loc.x, loc.y+1) && isEmpty(loc.x+1, loc.y+1));
-	case East:  return (isEmpty(loc.x+1, loc.y-1) && isEmpty(loc.x+1, loc.y) && isEmpty(loc.x+1, loc.y+1));
+	case East:  {
+		return (isEmpty(loc.x+1, loc.y-1) && isEmpty(loc.x+1, loc.y) && isEmpty(loc.x+1, loc.y+1));
+	}
 	case West:  return (isEmpty(loc.x-1, loc.y-1) && isEmpty(loc.x-1, loc.y) && isEmpty(loc.x-1, loc.y+1));
 	}
 	assert(0);
 }
 
-xy Grid::relativeLocation(const int x, const int y, const Direction direction) const {
-	switch (direction) {
-	case North: return (xy(x, y-1));
-	case South: return (xy(x, y+1));
-	case East: return (xy(x+1, y));
-	case West: return (xy(x-1, y));
-	}
-}
-
 bool Grid::isEmpty(const int x, const int y) const{
+	//cout << "isEmpty: " << x << " " << y;
 	auto itx = _grid.find(x);
 	if (itx == _grid.end()) {
+		//cout << " grid x end: true" << endl;
 		return true;
 	}
 	auto ity = itx->second.find(y);
 	if (ity == itx->second.end()) {
 		return true;
+		//cout << " grid y end: true" << endl;
 	}
-	return (strcmp(&ity->second, ".") == 0);
+	bool retval = (strcmp(&ity->second, ".") == 0);
+	//cout << (retval ? "true" : "false") << endl;
+	return (retval);
 }
 
 bool Grid::isElf(const xy& loc) const {
@@ -110,7 +109,7 @@ bool Grid::isElf(const int x, const int y) const {
 	if (ity == itx->second.end()) {
 		return false;
 	}
-	cout << "isElf:" << x << "," << y <<"):" << ity->second << endl;
+	//cout << "isElf:" << x << "," << y <<"):" << ity->second << endl;
 
 	return (strcmp(&ity->second, "#") == 0);
 }

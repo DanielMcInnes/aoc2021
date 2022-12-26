@@ -3,6 +3,7 @@
 
 #include <map>
 #include <vector>
+#include <cassert>
 
 typedef enum {
 	North,
@@ -16,6 +17,16 @@ public:
 	xy(const int x, const int y) : x(x), y(y) {}
 	int x;
 	int y;
+	xy relativeLocation(const Direction direction) const {
+		switch (direction) {
+		case North: return (xy(x, y-1));
+		case South: return (xy(x, y+1));
+		case East: return (xy(x+1, y));
+		case West: return (xy(x-1, y));
+		}
+		assert(0);
+		return xy(0,0);
+	}
 };
 
 class Location {
@@ -36,7 +47,7 @@ public:
 private:
 	void proposeMove(const xy& loc);
 	bool elfCanMove(const xy& loc, const Direction direction) const;
-	xy relativeLocation(const int x, const int y, const Direction direction) const;
+	xy relativeLocation(const xy& loc, const Direction direction) const;
 	bool isEmpty(const int x, const int y) const;
 	bool isElf(const xy& loc) const;
 	bool isElf(const int x, const int y) const;
