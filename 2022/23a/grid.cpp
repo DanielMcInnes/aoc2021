@@ -5,7 +5,12 @@
 
 using namespace std;
 
-Grid::Grid(const char* filename) {
+Grid::Grid(const char* filename) :
+	minx(0),
+	miny(0),
+	maxx(0),
+	maxy(0)
+{
 	ifstream inputFile(filename);
 
 	if (inputFile) {
@@ -16,8 +21,8 @@ Grid::Grid(const char* filename) {
 		{
 			cout << "line: " << line << endl;
 			for (auto& ch : line) {
-				_grid[x][y] = ch;
-				cout << "[" << x << "," << y << "] = " << ch;
+				write(x, y, Location(ch));
+				//cout << "[" << x << "," << y << "] = " << ch;
 				x++;
 			}
 			cout << endl;
@@ -25,6 +30,7 @@ Grid::Grid(const char* filename) {
 			y++;
 		}
 	}
+	print();
 }
 
 string str(const Direction direction) {
@@ -38,12 +44,28 @@ string str(const Direction direction) {
 	return "";
 }
 
+void Grid::write(const int x, const int y, const Location& location) {
+	if (x < minx) {
+		minx = x;
+	}
+	if (x > maxx) {
+		maxx = x;
+	}
+	if (y < miny) {
+		miny = y;
+	}
+	if (y > maxy) {
+		maxy = y;
+	}
+	_grid[x][y] = location;
+}
+
 void Grid::process() {
 	cout << "grid size: " << _grid.size() << endl;
 	for (auto& xline : _grid) {
 		for (auto& yline : xline.second) {
 			xy loc(xline.first, yline.first);
-			char ch = yline.second;
+			char ch = yline.second.ch;
 			//cout << "[" << loc.x << "," << loc.y << "]" << ch << " ";
 			if (isElf(loc)) {
 				cout << "found an elf at " << loc.x << loc.y << " adjacent ? " << (isElfAdjacent(loc.x, loc.y) ? "yes" : "no") <<  endl;
@@ -52,17 +74,60 @@ void Grid::process() {
 		}
 		cout << endl;
 	}
+	moveElves();
+}
+
+void Grid::moveElves() {
+	for (auto& xline : _grid) {
+		for (auto& yline : xline.second) {
+			xy elfDestination(xline.first, yline.first);
+			if (yline.second.elvesMovingFrom.size() > 0) {
+				cout << "moveElves: [" << elfDestination.x << "," << elfDestination.y << "].proposedMoves: ";
+				for (auto move : yline.second.elvesMovingFrom) {
+					cout << "[" << move.x << "," << move.y << "]";
+				}
+				cout << endl;
+				if (yline.second.elvesMovingFrom.size() > 1) {
+					cout << "clearing proposed moves to " << elfDestination.x << "," << elfDestination.y << endl;
+					yline.second.elvesMovingFrom.clear();
+					break;
+				}
+				for (auto originalElfLocation : yline.second.elvesMovingFrom) {
+					moveElf(originalElfLocation, elfDestination);
+				}
+			}
+		}
+	}
+	print();
+}
+
+void Grid::moveElf(const xy& from, const xy& to) {
+	cout << "elf moved from [" << from.x << "," << from.y << "]" << " to: [" << to.x << "," << to.y << "]" << endl;
+	_grid[from.x][from.y].ch = '.';
+	write(to.x, to.y, Location('#'));
 }
 
 void Grid::proposeMove(const xy& loc) {
 	if (isElfAdjacent(loc.x, loc.y)) {
 		for (Direction& dir : _directions) {
 			if (elfCanMove(loc, dir)) {
-				cout << "elf at " << loc.x << " " << loc.y << " can move " << str(dir) << endl;
+				xy newloc(loc.relativeLocation(dir));
+				cout << "elf at " << loc.x << " " << loc.y << " can move " << str(dir) << " to: " << newloc.x << newloc.y << endl;
+				_grid[newloc.x][newloc.y].elvesMovingFrom.push_back(loc);
+				break;
 			}
 		}
 	} else {
 		cout << "no elf adjacent to " << loc.x << " " << loc.y << endl;
+	}
+}
+
+void Grid::print() {
+	for (int y = miny; y <= maxy; ++y) {
+		for (int x = minx; x <= maxx; ++x) {
+			cout << _grid[x][y].ch;
+		}
+		cout << endl;
 	}
 }
 
@@ -91,7 +156,7 @@ bool Grid::isEmpty(const int x, const int y) const{
 		return true;
 		//cout << " grid y end: true" << endl;
 	}
-	bool retval = (strcmp(&ity->second, ".") == 0);
+	bool retval = (strcmp(&ity->second.ch, ".") == 0);
 	//cout << (retval ? "true" : "false") << endl;
 	return (retval);
 }
@@ -111,7 +176,7 @@ bool Grid::isElf(const int x, const int y) const {
 	}
 	//cout << "isElf:" << x << "," << y <<"):" << ity->second << endl;
 
-	return (strcmp(&ity->second, "#") == 0);
+	return (strcmp(&ity->second.ch, "#") == 0);
 }
 
 bool Grid::isElfAdjacent(const int x, const int y) const {

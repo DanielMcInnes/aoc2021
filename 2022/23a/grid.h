@@ -33,8 +33,10 @@ class Location {
 public:
 	explicit Location(const char data) : ch(data) {
 	}
+	explicit Location() : ch('.') {
+	}
 	char ch;
-	std::vector< std::pair<int, int> > proposedMoves; // the 'from' coordinates of elves that propose to move here
+	std::vector<xy> elvesMovingFrom; // the 'from' coordinates of elves that propose to move here
 };
 
 
@@ -52,8 +54,14 @@ private:
 	bool isElf(const xy& loc) const;
 	bool isElf(const int x, const int y) const;
 	bool isElfAdjacent(const int x, const int y) const;
-	std::map<int, std::map<int, char> > _grid;
+	void print();
+	void moveElves();
+	void moveElf(const xy& from, const xy& to);
+	void write(const int x, const int y, const Location& location);
+
+	std::map<int, std::map<int, Location> > _grid;
 	std::vector<Direction> _directions{North, South, West, East};
+	int minx, miny, maxx, maxy;
 };
 
 #endif // GRID_H
