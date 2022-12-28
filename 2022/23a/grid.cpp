@@ -2,6 +2,7 @@
 #include <iostream>
 #include <fstream>
 #include <cstring>
+#include <climits>
 
 using namespace std;
 
@@ -58,7 +59,7 @@ void Grid::process() {
 	for (auto& xline : _grid) {
 		for (auto& yline : xline.second) {
 			xy loc(xline.first, yline.first);
-			char ch = yline.second.ch;
+			//char ch = yline.second.ch;
 			//cout << "[" << loc.x << "," << loc.y << "]" << ch << " ";
 			if (isElf(loc)) {
 				 //cout << "found an elf at " << loc.x << loc.y << " adjacent ? " << (isElfAdjacent(loc.x, loc.y) ? "yes" : "no") <<  endl;
@@ -95,9 +96,9 @@ void Grid::moveElves() {
 			xy elfDestination(xline.first, yline.first);
 			if (yline.second.elvesMovingFrom.size() > 0) {
 				//cout << "moveElves: [" << elfDestination.x << "," << elfDestination.y << "].proposedMoves: ";
-				for (auto move : yline.second.elvesMovingFrom) {
-					//cout << "[" << move.x << "," << move.y << "]";
-				}
+				/*for (auto move : yline.second.elvesMovingFrom) {
+					cout << "[" << move.x << "," << move.y << "]";
+				}*/
 				//cout << endl;
 				if (yline.second.elvesMovingFrom.size() > 1) {
 					//cout << "clearing proposed moves to " << elfDestination.x << "," << elfDestination.y << endl;
@@ -126,10 +127,10 @@ void Grid::moveElf(const xy& from, const xy& to) {
 }
 
 void Grid::getBoundingRectangle() {
-	minElfX = 1000000;
-	minElfY = 1000000;
-	maxElfX = -1000000;
-	maxElfY = -1000000;
+	minElfX = INT_MAX;
+	minElfY = INT_MAX;
+	maxElfX = INT_MIN;
+	maxElfY = INT_MIN;
 	for (auto& xline : _grid) {
 		for (auto& yline : xline.second) {
 			xy loc(xline.first, yline.first);
@@ -156,27 +157,25 @@ void Grid::print() {
 	int emptyTiles = 0;
 	for (int y = minElfY; y <= maxElfY; ++y) {
 		for (int x = minElfX; x <= maxElfX; ++x) {
-			cout << _grid[x][y].ch;
+			//cout << _grid[x][y].ch;
 			if (_grid[x][y].ch == '.') {
 				emptyTiles++;
 			}
 		}
-		cout << endl;
+		//cout << endl;
 	}
-	int area = (maxElfX-minElfX) * (maxElfY - minElfY);
+	//int area = (maxElfX-minElfX) * (maxElfY - minElfY);
 	//cout << "minx: " << minElfX << " maxx: " << maxElfX << " miny: " << minElfY << " maxy: " << maxElfY << " area: " << area << endl;
 	//cout << "elves: " << elfCount << endl;
 	cout << "empty tiles: " << emptyTiles << endl;
 }
 
 bool Grid::elfCanMove(const xy& loc, const Direction direction) {
-	cout << "elfCanMove(" << loc.x << "," << loc.y << ")" << str(direction) << endl;
+	cout << "elfCanMove(" << loc.x << "," << loc.y << ")" << str(direction) << endl; // WTF commenting out this line breaks the code
 	switch (direction) {
 	case North: return (isEmpty(loc.x-1, loc.y-1) && isEmpty(loc.x, loc.y-1) && isEmpty(loc.x+1, loc.y-1));
 	case South: return (isEmpty(loc.x-1, loc.y+1) && isEmpty(loc.x, loc.y+1) && isEmpty(loc.x+1, loc.y+1));
-	case East:  {
-		return (isEmpty(loc.x+1, loc.y-1) && isEmpty(loc.x+1, loc.y) && isEmpty(loc.x+1, loc.y+1));
-	}
+	case East:  return (isEmpty(loc.x+1, loc.y-1) && isEmpty(loc.x+1, loc.y) && isEmpty(loc.x+1, loc.y+1));
 	case West:  return (isEmpty(loc.x-1, loc.y-1) && isEmpty(loc.x-1, loc.y) && isEmpty(loc.x-1, loc.y+1));
 	}
 	assert(0);

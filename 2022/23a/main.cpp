@@ -15,10 +15,10 @@ int main(int argc, char *argv[])
 	Grid grid("../input");
 	for (int i = 0; i < 10; ++i) {
 		grid.process();
-		cout << "== End of Round " << i+1 << " ==" << endl;
+		cout << "== End of Round " << i+1 << " ==";
+		grid.print();
 	}
 
-	grid.print();
 	exit(0);
 	return a.exec();
 }

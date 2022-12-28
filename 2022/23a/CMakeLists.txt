@@ -20,6 +20,6 @@ add_executable(23a
     main.cpp
 )
 target_link_libraries(23a Qt${QT_VERSION_MAJOR}::Core)
-
+target_compile_options(23a PRIVATE -Werror -Wall -Wextra -pedantic-errors -Wconversion -Wsign-conversion)
 install(TARGETS 23a
     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR})
