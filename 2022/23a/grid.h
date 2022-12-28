@@ -46,7 +46,6 @@ public:
 	explicit Grid(const char* filename);
 	void process();
 
-private:
 	void proposeMove(const xy& loc);
 	bool elfCanMove(const xy& loc, const Direction direction) const;
 	xy relativeLocation(const xy& loc, const Direction direction) const;
@@ -55,13 +54,16 @@ private:
 	bool isElf(const int x, const int y) const;
 	bool isElfAdjacent(const int x, const int y) const;
 	void print();
+	void changeDirections();
 	void moveElves();
 	void moveElf(const xy& from, const xy& to);
 	void write(const int x, const int y, const Location& location);
+	void getBoundingRectangle();
 
 	std::map<int, std::map<int, Location> > _grid;
 	std::vector<Direction> _directions{North, South, West, East};
-	int minx, miny, maxx, maxy;
+	int minElfX, minElfY, maxElfX, maxElfY, elfCount;
+
 };
 
 #endif // GRID_H

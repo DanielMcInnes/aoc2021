@@ -11,8 +11,10 @@ using namespace std;
 int main(int argc, char *argv[])
 {
 	QCoreApplication a(argc, argv);
-	Grid grid("../input4");
-	grid.process();
+	Grid grid("../input2");
+	for (int i = 0; i < 10; ++i) {
+		grid.process();
+	}
 
 	return a.exec();
 }

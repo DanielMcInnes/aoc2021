@@ -6,10 +6,11 @@
 using namespace std;
 
 Grid::Grid(const char* filename) :
-	minx(0),
-	miny(0),
-	maxx(0),
-	maxy(0)
+	minElfX(0),
+	minElfY(0),
+	maxElfX(0),
+	maxElfY(0),
+	elfCount(0)
 {
 	ifstream inputFile(filename);
 
@@ -21,6 +22,9 @@ Grid::Grid(const char* filename) :
 		{
 			cout << "line: " << line << endl;
 			for (auto& ch : line) {
+				if (ch == '#') {
+					elfCount++;
+				}
 				write(x, y, Location(ch));
 				//cout << "[" << x << "," << y << "] = " << ch;
 				x++;
@@ -45,18 +49,6 @@ string str(const Direction direction) {
 }
 
 void Grid::write(const int x, const int y, const Location& location) {
-	if (x < minx) {
-		minx = x;
-	}
-	if (x > maxx) {
-		maxx = x;
-	}
-	if (y < miny) {
-		miny = y;
-	}
-	if (y > maxy) {
-		maxy = y;
-	}
 	_grid[x][y] = location;
 }
 
@@ -75,6 +67,7 @@ void Grid::process() {
 		cout << endl;
 	}
 	moveElves();
+	changeDirections();
 }
 
 void Grid::moveElves() {
@@ -122,13 +115,48 @@ void Grid::proposeMove(const xy& loc) {
 	}
 }
 
+void Grid::getBoundingRectangle() {
+	minElfX = 1000000;
+	minElfY = 1000000;
+	maxElfX = -1000000;
+	maxElfY = -1000000;
+	for (auto& xline : _grid) {
+		for (auto& yline : xline.second) {
+			xy loc(xline.first, yline.first);
+			if (isElf(loc)) {
+				if (loc.x < minElfX) {
+					minElfX = loc.x;
+				}
+				if (loc.y < minElfY) {
+					minElfY = loc.y;
+				}
+				if (loc.x > maxElfX) {
+					maxElfX = loc.x;
+				}
+				if (loc.y > maxElfY) {
+					maxElfY = loc.y;
+				}
+			}
+		}
+	}
+}
+
 void Grid::print() {
-	for (int y = miny; y <= maxy; ++y) {
-		for (int x = minx; x <= maxx; ++x) {
+	getBoundingRectangle();
+	int emptyTiles = 0;
+	for (int y = minElfY; y <= maxElfY; ++y) {
+		for (int x = minElfX; x <= maxElfX; ++x) {
 			cout << _grid[x][y].ch;
+			if (_grid[x][y].ch == '.') {
+				emptyTiles++;
+			}
 		}
 		cout << endl;
 	}
+	int area = (maxElfX-minElfX) * (maxElfY - minElfY);
+	cout << "minx: " << minElfX << " maxx: " << maxElfX << " miny: " << minElfY << " maxy: " << maxElfY << " area: " << area << endl;
+	cout << "elves: " << elfCount << endl;
+	cout << "empty tiles: " << emptyTiles << endl;
 }
 
 bool Grid::elfCanMove(const xy& loc, const Direction direction) const {
@@ -184,4 +212,11 @@ bool Grid::isElfAdjacent(const int x, const int y) const {
 			isElf(x-1, y)					 || isElf(x+1, y)	|| \
 			isElf(x-1, y+1) || isElf(x, y+1) || isElf(x+1, y+1)
 			);
+}
+
+void Grid::changeDirections() {
+	cout << "changing directions from " << str(_directions[0]) << " to: ";
+	_directions.push_back(_directions[0]);
+	_directions.erase(_directions.begin());
+	cout << str(_directions[0]) << endl;
 }
