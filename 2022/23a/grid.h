@@ -47,12 +47,13 @@ public:
 	void process();
 
 	void proposeMove(const xy& loc);
-	bool elfCanMove(const xy& loc, const Direction direction) const;
+	bool elfCanMove(const xy& loc, const Direction direction);
 	xy relativeLocation(const xy& loc, const Direction direction) const;
-	bool isEmpty(const int x, const int y) const;
+	bool isEmpty(const int x, const int y);
 	bool isElf(const xy& loc) const;
 	bool isElf(const int x, const int y) const;
 	bool isElfAdjacent(const int x, const int y) const;
+
 	void print();
 	void changeDirections();
 	void moveElves();
@@ -63,7 +64,6 @@ public:
 	std::map<int, std::map<int, Location> > _grid;
 	std::vector<Direction> _directions{North, South, West, East};
 	int minElfX, minElfY, maxElfX, maxElfY, elfCount;
-
 };
 
 #endif // GRID_H
