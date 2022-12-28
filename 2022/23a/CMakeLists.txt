@@ -4,9 +4,6 @@ project(23a LANGUAGES CXX)
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
-set(CMAKE_AUTOUIC ON)
-set(CMAKE_AUTOMOC ON)
-set(CMAKE_AUTORCC ON)
 set (CMAKE_BUILD_TYPE DEBUG)
 
 set(CMAKE_CXX_STANDARD 17)
@@ -19,7 +16,6 @@ add_executable(23a
     grid.h grid.cpp
     main.cpp
 )
-target_link_libraries(23a Qt${QT_VERSION_MAJOR}::Core)
-target_compile_options(23a PRIVATE -Werror -Wall -Wextra -pedantic-errors -Wconversion -Wsign-conversion)
+target_link_libraries(23a)
 install(TARGETS 23a
     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR})

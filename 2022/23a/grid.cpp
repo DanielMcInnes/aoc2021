@@ -34,8 +34,8 @@ Grid::Grid(const char* filename) :
 			x = 0;
 			y++;
 		}
+		inputFile.close();
 	}
-	inputFile.close();
 	//print();
 }
 

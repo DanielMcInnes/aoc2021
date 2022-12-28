@@ -32,8 +32,10 @@ public:
 class Location {
 public:
 	explicit Location(const char data) : ch(data) {
+		assert (elvesMovingFrom.size() == 0);
 	}
 	explicit Location() : ch('.') {
+		assert (elvesMovingFrom.size() == 0);
 	}
 	char ch;
 	std::vector<xy> elvesMovingFrom; // the 'from' coordinates of elves that propose to move here

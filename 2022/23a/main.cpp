@@ -8,7 +8,7 @@
 using namespace std;
 
 
-int main(int /*argc*/, char**/*argv[]*/)
+int main(int argc, char *argv[])
 {
 	Grid grid("../input");
 	for (int i = 0; i < 10; ++i) {
@@ -16,4 +16,5 @@ int main(int /*argc*/, char**/*argv[]*/)
 		cout << "== End of Round " << i+1 << " ==";
 		grid.print();
 	}
+	return 0;
 }
