@@ -46,19 +46,18 @@ class Grid {
 public:
 
 	explicit Grid(const char* filename);
-	void process();
+	bool process();
 
 	void proposeMove(const xy& loc);
 	bool elfCanMove(const xy& loc, const Direction direction);
 	xy relativeLocation(const xy& loc, const Direction direction) const;
 	bool isEmpty(const int x, const int y);
-	bool isElf(const xy& loc) const;
-	bool isElf(const int x, const int y) const;
-	bool isElfAdjacent(const int x, const int y) const;
+	bool isElf(int x, int y);
+	bool isElfAdjacent(const int x, const int y);
 
 	void print();
 	void changeDirections();
-	void moveElves();
+	bool moveElves();
 	void moveElf(const xy& from, const xy& to);
 	void write(const int x, const int y, const Location& location);
 	void getBoundingRectangle();
