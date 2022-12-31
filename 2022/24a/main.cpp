@@ -6,7 +6,7 @@ using namespace std;
 int main()
 {
 	Grid grid("../input");
-	int counter = 1;
+	int counter = 0;
 	while (grid._foundExit == false) {
 	//for (int i = 0; i < 5; ++i) {
 		cout << endl << "Minute " << counter << ":" << endl;
