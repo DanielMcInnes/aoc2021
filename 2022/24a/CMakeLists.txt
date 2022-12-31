@@ -8,6 +8,9 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 add_executable(24a
     grid.h grid.cpp
     location.h location.cpp
+    blizzard.h blizzard.cpp
+    xy.h xy.cpp
+    directions.h
     main.cpp)
 
 install(TARGETS 24a
