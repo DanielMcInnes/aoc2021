@@ -111,6 +111,9 @@ void Grid::moveExpeditions() {
 			cout << "!!!!!!!! FOUND IT !!!!!!!!!!!" << endl;
 			_foundExit = true;
 		}
+		if (loc.isEntrance) {
+			_foundEntrance = true;
+		}
 	}
 	pendingExpeditionMoves.clear();
 }
@@ -189,8 +192,6 @@ void Grid::getBoundingRectangle() {
 }
 
 void Grid::print() const {
-	int x = 0;
-	int y = 0;
 	for (int y = minY; y <= maxY; ++y) {
 		for (int x = minX; x <= maxX; ++x) {
 			char ch = _grid.at(x).at(y).toChar();
@@ -309,14 +310,8 @@ bool Grid::isWall(const xy& pos) const {
 void Grid::clearExpeditions(const bool clearEntrance, const bool clearExit) {
 	for (int y = minY; y <= maxY; ++y) {
 		for (int x = minX; x <= maxX; ++x) {
-			auto loc = _grid.at(x).at(y);
-			if (loc.isEntrance && clearEntrance) {
-				loc.setExpedition(false);
-			}
-			else if (loc.isExit && clearExit) {
-				loc.setExpedition(false);
-			}
-			else {
+			auto& loc = _grid.at(x).at(y);
+			if ((!loc.isEntrance || clearEntrance) && (!loc.isExit || clearExit)) {
 				loc.setExpedition(false);
 			}
 		}

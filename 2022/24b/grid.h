@@ -39,6 +39,7 @@ public:
 	std::vector<Blizzard> pendingBlizzardMoves;
 	xy _exit;
 	bool _foundExit = false;
+	bool _foundEntrance = false;
 };
 
 #endif // GRID_H
