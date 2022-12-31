@@ -20,8 +20,8 @@ public:
 	void clearBlizzardDirection(const Direction direction);
 
 	void setExpedition(const bool hasExpedition);
+	bool isEmpty() const;
 
-	bool nblizzard = false, eblizzard = false, sblizzard = false, wblizzard = false, hasExpedition = false, isWall = false;
-	char ch;
+	bool nblizzard = false, eblizzard = false, sblizzard = false, wblizzard = false, hasExpedition = false, isWall = false, isExit = false;
 };
 #endif // LOCATION_H

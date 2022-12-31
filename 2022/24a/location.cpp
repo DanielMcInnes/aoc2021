@@ -5,10 +5,9 @@
 
 using namespace std;
 
-Location::Location() : ch('*') {}
+Location::Location() {}
 
 Location::Location(const char data) {
-	ch = data;
 	switch (data) {
 	case '^':
 	{
@@ -117,6 +116,10 @@ std::vector<Direction> Location::getBlizzardDirections() const {
 }
 
 void Location::setExpedition(const bool newval) {
-	COUT << newval << endl;
+	//COUT << newval << endl;
 	hasExpedition = newval;
+}
+
+bool Location::isEmpty() const {
+	return(getBlizzardDirections().size() == 0);
 }

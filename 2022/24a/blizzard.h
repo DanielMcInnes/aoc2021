@@ -8,9 +8,10 @@ class Blizzard
 {
 public:
 	Blizzard();
-	Blizzard(const xy& pos, const Direction dir);
+	Blizzard(const xy& oldpos, const xy& newpos, const Direction dir);
 	Direction _direction;
-	xy _pos;
+	const xy _newpos;
+	const xy _oldpos;
 };
 
 #endif // BLIZZARD_H
