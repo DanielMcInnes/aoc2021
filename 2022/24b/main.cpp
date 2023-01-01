@@ -1,11 +1,12 @@
 #include <iostream>
-#include "grid.h"
+#include "grid24b.h"
+#include "location.h"
 
 using namespace std;
 
 int main()
 {
-	Grid grid("../input");
+	Grid24b<Location> grid("../input");
 	int counter = 0, answerA = 0, answerB = 0;
 	while (grid._foundExit == false) {
 		cout << endl << "Minute " << counter << ":" << endl;

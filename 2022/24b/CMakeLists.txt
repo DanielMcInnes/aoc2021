@@ -6,7 +6,9 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 add_executable(24b
-    grid.h grid.cpp
+    directions.h directions.cpp
+    grid.h
+    grid24b.h
     location.h location.cpp
     blizzard.h blizzard.cpp
     xy.h xy.cpp

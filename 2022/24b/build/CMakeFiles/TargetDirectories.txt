@@ -1,7 +1,0 @@
-/home/dmcinnes/git/aoc2021/2022/24b/build/CMakeFiles/24b.dir
-/home/dmcinnes/git/aoc2021/2022/24b/build/CMakeFiles/edit_cache.dir
-/home/dmcinnes/git/aoc2021/2022/24b/build/CMakeFiles/rebuild_cache.dir
-/home/dmcinnes/git/aoc2021/2022/24b/build/CMakeFiles/list_install_components.dir
-/home/dmcinnes/git/aoc2021/2022/24b/build/CMakeFiles/install.dir
-/home/dmcinnes/git/aoc2021/2022/24b/build/CMakeFiles/install/local.dir
-/home/dmcinnes/git/aoc2021/2022/24b/build/CMakeFiles/install/strip.dir
