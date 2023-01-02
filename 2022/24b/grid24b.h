@@ -10,11 +10,11 @@
 
 #include "blizzard.h"
 
-template <typename T>
-class Grid24b : public Grid<T>
+template <typename KeyX, typename KeyY, typename Value>
+class Grid24b : public Grid<KeyX, KeyY, Value>
 {
 public:
-	explicit Grid24b(const char* filename) : Grid<T>(filename)
+	explicit Grid24b(const char* filename) : Grid<KeyX, KeyY, Value>(filename)
 	{
 		std::ifstream inputFile(filename);
 		bool foundexit = false;
@@ -22,13 +22,13 @@ public:
 
 		if (inputFile) {
 			std::string line;
-			int y  = 0;
-			int x = 0;
+			KeyY y  = 0;
+			KeyX x = 0;
 			while (getline(inputFile, line))
 			{
 				std::cout << "line: " << line << std::endl;
 				for (auto& ch : line) {
-					this->write(x, y, T(ch));
+					this->write(x, y, Value(ch));
 					x++;
 				}
 				x = 0;
@@ -66,7 +66,7 @@ public:
 
 	bool isEmpty(const xy& pos) const {
 		bool result;
-		const T& loc(this->getElement(pos, result));
+		const Value& loc(this->getElement(pos, result));
 		if (result) {
 			return (loc.isEmpty());
 		}
@@ -77,7 +77,7 @@ public:
 		xy nextPosition(loc.relativeLocation(direction));
 		//cout << __FUNCTION__ << ": nextPosition: "<< nextPosition.x << " " << nextPosition.y << endl;
 		bool result = false;
-		const T& nextLocation(this->getElement(nextPosition, result));
+		const Value& nextLocation(this->getElement(nextPosition, result));
 		if (!result) {
 			//cout << __FUNCTION__ << ": ret false, can't move outside of the grid" << endl;
 			return false; // can't move outside of the grid
@@ -104,8 +104,8 @@ public:
 	}
 
 	void print() const {
-		for (int y = this->minY; y <= this->maxY; ++y) {
-			for (int x = this->minX; x <= this->maxX; ++x) {
+		for (KeyY y = this->minY; y <= this->maxY; ++y) {
+			for (KeyX x = this->minX; x <= this->maxX; ++x) {
 				char ch = this->_grid.at(x).at(y).toChar();
 				//cout << "[" << x << "," << y << "]" << ch;
 				std::cout << ch;
@@ -117,7 +117,7 @@ public:
 
 	bool isWall(const xy& loc) const {
 		bool result;
-		const T& location(this->getElement(loc, result));
+		const Value& location(this->getElement(loc, result));
 		if (result) {
 			return location.isWall;
 		}
@@ -142,7 +142,7 @@ public:
 	void moveExpeditions() {
 		bool result = false;
 		for (const auto& pos  : pendingExpeditionMoves) {
-			T& loc(this->getWritableElement(pos, result));
+			Value& loc(this->getWritableElement(pos, result));
 			assert(result);
 			loc.setExpedition(true);
 			if (loc.isExit) {
@@ -167,8 +167,8 @@ public:
 		}
 	}
 	void clearExpeditions(const bool clearEntrance = false, const bool clearExit = false) {
-		for (int y = this->minY; y <= this->maxY; ++y) {
-			for (int x = this->minX; x <= this->maxX; ++x) {
+		for (KeyY y = this->minY; y <= this->maxY; ++y) {
+			for (KeyX x = this->minX; x <= this->maxX; ++x) {
 				auto& loc = this->_grid.at(x).at(y);
 				if ((!loc.isEntrance || clearEntrance) && (!loc.isExit || clearExit)) {
 					loc.setExpedition(false);
@@ -181,7 +181,7 @@ public:
 		for (auto& xline : this->_grid) {
 			for (auto& yline : xline.second) {
 				xy position(xline.first, yline.first);
-				T& loc = yline.second;
+				Value& loc = yline.second;
 				for (const Direction& dir : loc.getBlizzardDirections()) {
 					moveBlizzard(position, loc, dir);
 				}
@@ -190,18 +190,18 @@ public:
 		for(const auto& blizzard : pendingBlizzardMoves) {
 			bool result = false;
 
-			T& loc(this->getWritableElement(blizzard._newpos, result));
+			Value& loc(this->getWritableElement(blizzard._newpos, result));
 			assert(result);
 			loc.setBlizzardDirection(blizzard._direction);
 			loc.setExpedition(false);
 		}
 		pendingBlizzardMoves.clear();
 	}
-	void moveBlizzard(const xy& from, T& oldPosition, const Direction direction) {
+	void moveBlizzard(const xy& from, Value& oldPosition, const Direction direction) {
 		//COUT << from.x << "," << from.y << " " << toString(direction) << endl;
 		bool result;
 		xy newPosition(from.relativeLocation(direction));
-		T& newLocation(this->getWritableElement(newPosition, result));
+		Value& newLocation(this->getWritableElement(newPosition, result));
 		if (result) {
 			if (newLocation.isWall) {
 				switch (direction) {

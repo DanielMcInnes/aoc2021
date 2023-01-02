@@ -8,7 +8,7 @@
 #include <climits>
 #include "xy.h"
 
-template <typename T>
+template <typename KeyX, typename KeyY, typename Value>
 class Grid {
 public:
 
@@ -27,7 +27,7 @@ public:
 	{
 	}
 
-	const T& getElement(const xy& pos, bool& success) const {
+	const Value& getElement(const xy& pos, bool& success) const {
 		success = true;
 		auto itx = _grid.find(pos.x);
 		if (itx == _grid.end()) {
@@ -42,7 +42,7 @@ public:
 		return ity->second;
 	}
 
-	T& getWritableElement(const xy& pos, bool& success) {
+	Value& getWritableElement(const xy& pos, bool& success) {
 		success = true;
 		auto itx = _grid.find(pos.x);
 		if (itx == _grid.end()) {
@@ -55,7 +55,7 @@ public:
 		return ity->second;
 	}
 
-	void write(const int x, const int y, const T location) {
+	void write(const KeyX x, const KeyY y, const Value location) {
 		//COUT << "[" << x << "," << y << "]" << location.ch << " ";
 		if (x < minX) {
 			minX = x;
@@ -73,8 +73,9 @@ public:
 	}
 
 
-	std::map<int, std::map<int, T> > _grid;
-	int minX, minY, maxX, maxY;
+	std::map<KeyX, std::map<KeyY, Value> > _grid;
+	KeyX minX, maxX;
+	KeyY minY, maxY;
 };
 
 #endif // GRID_H
