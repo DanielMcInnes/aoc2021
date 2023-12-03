@@ -7,7 +7,7 @@ using namespace std;
 int main()
 {
 	Grid24b<int, int, Location> grid("../input");
-	int counter = 0, answerA = 0, answerB = 0;
+	int counter = 0;
 	while (grid._foundExit == false) {
 		cout << endl << "Minute " << counter << ":" << endl;
 		grid.process();
@@ -15,7 +15,6 @@ int main()
 		counter++;
 	}
 	cout << "Found exit after " << counter << " iterations" << endl;
-	answerA = counter;
 
 	cout << "clearing expeditions" << endl;
 	grid.clearExpeditions(true, false);

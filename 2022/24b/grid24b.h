@@ -1,7 +1,7 @@
 #ifndef GRID24B_H
 #define GRID24B_H
 
-#include "grid.h"
+#include "map2d.h"
 
 #include <iostream>
 #include <fstream>
@@ -11,10 +11,10 @@
 #include "blizzard.h"
 
 template <typename KeyX, typename KeyY, typename Value>
-class Grid24b : public Grid<KeyX, KeyY, Value>
+class Grid24b : public map2d<KeyX, KeyY, Value>
 {
 public:
-	explicit Grid24b(const char* filename) : Grid<KeyX, KeyY, Value>(filename)
+	explicit Grid24b(const char* filename) : map2d<KeyX, KeyY, Value>(filename)
 	{
 		std::ifstream inputFile(filename);
 		bool foundexit = false;

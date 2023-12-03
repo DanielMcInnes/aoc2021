@@ -1,19 +1,16 @@
 cmake_minimum_required(VERSION 3.5)
 
-project(24b LANGUAGES CXX)
+project(22a LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-add_executable(24b
+add_executable(22a
     directions.h directions.cpp
+    xy.h
     map2d.h
-    grid24b.h
-    location.h location.cpp
-    blizzard.h blizzard.cpp
-    xy.h xy.cpp
-    directions.h
+    map22a.h
     main.cpp)
 
-install(TARGETS 24b
+install(TARGETS 22a
     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR})

@@ -9,17 +9,17 @@
 #include "xy.h"
 
 template <typename KeyX, typename KeyY, typename Value>
-class Grid {
+class map2d {
 public:
 
-	explicit Grid(const char* filename) :
+	explicit map2d(const char* filename) :
 		minX(INT_MAX),
 		minY(INT_MAX),
 		maxX(INT_MIN),
 		maxY(INT_MIN)
 	{
 	}
-	explicit Grid() :
+	explicit map2d() :
 		minX(INT_MAX),
 		minY(INT_MAX),
 		maxX(INT_MIN),
